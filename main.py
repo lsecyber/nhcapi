@@ -7,10 +7,13 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the specified message and options as a command.")
-    parser.add_argument('-f', '--function', type=str, required=True,help="Function to perform.")
+    parser.add_argument('-f', '--function', type=str, required=True,help="Function to perform. (required)")
+    parser.add_argument('-i', '--input-key', type=str, required=False,help="Input key to run function on (only used for vMix). (optional)")
+    parser.add_argument('-d', '--duration', type=int, required=False,help="Duration of function for fades. (optional)")
     args = parser.parse_args()
-    print("Testing:  ",str(args))
-
+    print("Function: '",args.function,"'")
+    print("Duration: '",args.duration,"'")
+    print("Input Key: '",args.input_key,"'")
 
 
 #print(vmixapi.checkvMixRunning())
