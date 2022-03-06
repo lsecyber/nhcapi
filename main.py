@@ -2,14 +2,22 @@ import vmixapi
 import vmixfunctions
 import ptzfunctions
 import time
+import sys
+import argparse
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run the specified message and options as a command.")
+    parser.add_argument('-f', '--function', type=str, required=True,help="Function to perform.")
+    args = parser.parse_args()
+    print("Testing:  ",str(args))
 
 
 
-print(vmixapi.checkvMixRunning())
+#print(vmixapi.checkvMixRunning())
 
-print(vmixfunctions.openvMix())
+#print(vmixfunctions.openvMix())
 
-print(vmixapi.checkvMixRunning())
+#print(vmixapi.checkvMixRunning())
 
 """
 examples:
