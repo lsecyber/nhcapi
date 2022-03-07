@@ -246,7 +246,6 @@ def getStreamingStatus(logsPath: str = "C:/ProgramData/vMix/streaming/"):
     file_list = [f for f in listdir(logsPath) if isfile(join(logsPath, f))]
     now = datetime.now()
     today = now.strftime("%Y%m%d")
-    today = "20220228"
     filename_part_1 = "streaming1 " + today + "-"
     possible_file_choices = list()
 
