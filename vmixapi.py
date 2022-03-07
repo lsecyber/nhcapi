@@ -6,6 +6,7 @@ from datetime import datetime
 from os import listdir
 from os.path import isfile, join
 
+
 def checkvMixRunning():
     """
     Checks if vMix is actively running by calling its API, and if there is no response, it determines that vMix is off.
@@ -230,27 +231,53 @@ def getAudioInputDetails(inputNumber):
     return audioInputResult
 
 
-def getStreamingDetails(logsPath: str = "C:/ProgramData/vMix/streaming/"):
-    filelist = [f for f in listdir(logsPath) if isfile(join(logsPath, f))]
+def getStreamingStatus(logsPath: str = "C:/ProgramData/vMix/streaming/"):
+    """
+    Gets the status of vMix's current streaming status. It does this by reading the vMix log files.
+    This only works on the local machine with vMix.
+
+    :param logsPath: path to logs file, default: "C:/ProgramData/vMix/streaming/"
+    :type logsPath: str
+    :return: returns True if streaming successfully, False if not streaming,
+    and a text string if there is a streaming issue in vMix.
+    :raises: generic exception with error string if no last line is found, or with an error reading the last line.
+    """
+    file_list = [f for f in listdir(logsPath) if isfile(join(logsPath, f))]
     now = datetime.now()
     today = now.strftime("%Y%m%d")
+    today = "20220228"
     filename_part_1 = "streaming1 " + today + "-"
-    possibleFileChoices = list()
-    for file in filelist:
-        if file[0:20] == filename_part_1:
-            possibleFileChoices.append(file)
+    possible_file_choices = list()
 
-    if len(possibleFileChoices) == 0:
-        streamingLog = None
+    for file in file_list:
+        if file[0:20] == filename_part_1:
+            possible_file_choices.append(file)
+
+    if len(possible_file_choices) == 0:
+        streaming_log = None
+        return False
     else:
-        streamingLog = possibleFileChoices[-1]
-    streaming_log_absolute_path = logsPath + str(streamingLog)
+        streaming_log = possible_file_choices[-1]
+    streaming_log_absolute_path = logsPath + str(streaming_log)
 
     with open(streaming_log_absolute_path) as log_file:
-        streamingLogLines = [line.rstrip() for line in log_file][-1]
-        print(streamingLogLines)
+        test_line = [line.rstrip() for line in log_file]
 
+    if test_line[-1] is None and test_line[-2] is None:
+        raise Exception("Error with reading vMix streaming log files - no suitable last line of script found.")
+    elif test_line[-1] is None and test_line[-2] is not None:
+        streaming_log_last_line = test_line[-2]
+    elif test_line[-1] is not None:
+        streaming_log_last_line = test_line[-1]
+    else:
+        raise Exception("Error with finding last line in vMix log file.")
+    print(streaming_log_last_line)
 
-
-
-
+    if streaming_log_last_line[0:6] == "frame=":
+        return True
+    elif streaming_log_last_line[1:7] == "dshow " and streaming_log_last_line.split("(")[1].split("%%")[0]:
+        return "Error - buffer full. Most likely means connection issues between vMix and web."
+    elif streaming_log_last_line[1:5] == "aac ":
+        return False
+    else:
+        raise Exception(f"Unknown last line in vMix streaming log file. Line: {streaming_log_last_line}")
