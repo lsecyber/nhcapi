@@ -25,9 +25,10 @@ def checkvMixRunning():
         return False
 
 
-def getvMixAPI():  # Downloads the API information from vMix.
+def getvMixAPI():
     """
     Returns a dictionary with all of vMix's raw information from its API. It then converts the raw xml to a python dict.
+
     :return: a dictionary with all the information from vMix's API
     :rtype: dict
     """
