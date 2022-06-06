@@ -20,7 +20,7 @@ def sendHexCommand(hex_command: str, target_ip: str = "192.168.168.41"):
     data = bytes.fromhex(hex_cmd)
     s.send(data)
     data_received_1 = s.recv(1024)
-    print("Executing now...")
+    print("Executing PTZ command now...")
     s.settimeout(10)
     data_received_2 = ""
     try:

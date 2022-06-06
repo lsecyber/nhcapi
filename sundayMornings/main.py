@@ -1,10 +1,10 @@
-from sys import path
-path.append('C:\\QuickAccess Files\git\\nhcapi')
-
+import sys
+sys.path.append('C:\\QuickAccess Files\git\\nhcapi')
 import vmixapi
 import vmixfunctions as vFunc
 import ptzfunctions as ptz
 import argparse
+import threading
 from urllib.parse import quote
 from tkinter.messagebox import askyesno
 from time import sleep
@@ -130,7 +130,7 @@ def endGreeting():
 
 def startSermon():
     ptz.recallPreset(PTZ_PREACHING_PRESET)
-    sleep(1.25)
+    sleep(0.75)
     vFunc.fadeToInput(ptzWithoutLyricsInputKey)
     sleep(1)
     vFunc.previewInput(slidesInputKey)
@@ -145,11 +145,22 @@ def endCommunion():
 
 
 def startLastSong():
-    ptz.recallPreset(PTZ_WIDE_PRESET)
+    # runs ptz.recallPreset asynchronously
+    recallPresetThread = threading.Thread(target=ptz.recallPreset, args=([PTZ_WIDE_PRESET]), kwargs={})
+    recallPresetThread.start()
+
     sleep(0.5)
+
+    # fades to the ptz with lyrics input in vMix
     vFunc.fadeToInput(ptzWithLyricsInputKey)
-    sleep(1)
+
+    # sleep(1)
+
+    # sends the slides input to the vMix preview
     vFunc.previewInput(slidesInputKey)
+
+    # wait for recallPreset to finish
+    recallPresetThread.join()
 
 
 def endService():
