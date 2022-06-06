@@ -1,4 +1,7 @@
-import vmixapi as vmixapi
+from sys import path
+path.append('C:\\QuickAccess Files\git\\nhcapi')
+
+import vmixapi
 import vmixfunctions as vFunc
 import ptzfunctions as ptz
 import argparse
