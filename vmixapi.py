@@ -1,7 +1,6 @@
 import urllib3
 import xmltodict
 import traceback
-import os
 from datetime import datetime
 from os import listdir
 from os.path import isfile, join
@@ -42,6 +41,7 @@ def getvMixAPI():
         data = xmltodict.parse(response.data)
     except:
         print("Failed to parse xml from response (%s)" % traceback.format_exc())
+        return False
 
     return data['vmix']
 
@@ -65,8 +65,8 @@ def lookupInputKey(inputKeyToLookup: str):
             x = x + 1
         except:
             break
-        if x > 100:
-            print("x > 100")
+        if x > 200:
+            print("x > 200")
             break
 
     inputKeyFound = False

@@ -13,8 +13,10 @@ if __name__ == "__main__":
                         help="Input key to run function on (only used for vMix). (optional)")
     parser.add_argument('-d', '--duration', type=int, required=False,
                         help="Duration of function for fades in vMix. (optional)")
-    parser.add_argument('-d', '--duration', type=int, required=False,
-                        help="Duration of function for fades in vMix. (optional)")
+    parser.add_argument('--hex-command', type=str, required=False,
+                        help="Hex command to send to PTZ camera. (optional)")
+    parser.add_argument('-p', '--preset-file', type=str, required=False,
+                        help="Preset file (only used to open vMix). (optional)")
     args = parser.parse_args()
     print("Function: '", args.function, "'")
     print("Duration: '", args.duration, "'")
