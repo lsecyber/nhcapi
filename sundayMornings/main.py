@@ -154,7 +154,7 @@ def startLastSong():
     # fades to the ptz with lyrics input in vMix
     vFunc.fadeToInput(ptzWithLyricsInputKey)
 
-    # sleep(1)
+    sleep(1)
 
     # sends the slides input to the vMix preview
     vFunc.previewInput(slidesInputKey)
