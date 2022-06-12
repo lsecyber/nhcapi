@@ -47,4 +47,40 @@ class SundayMornings(Resource):
 api.add_resource(SundayMornings, '/api')
 
 if __name__ == '__main__':
-    app.run(port=5555, debug=False)
+    app.run(port=5555, debug=False, host='0.0.0.0')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

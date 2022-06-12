@@ -315,17 +315,17 @@ def endService():
     """
     try:
         # fade to slides input in vMix
-        vFunc.fadeToInput(slidesInputKey)
+        if vFunc.fadeToInput(slidesInputKey) is False: error()
 
         sleep(1.1)
 
         # send the static (dynamic) date slide to vMix preview
-        vFunc.previewInput(sundayMorningWorshipDateInputKey)
+        if vFunc.previewInput(sundayMorningWorshipDateInputKey) is False: error()
 
         sleep(0.5)
 
         # stop recording in vMix
-        vFunc.stopRecording()
+        if vFunc.stopRecording() is False: error()
     except Exception as e:
         print(str(e))
         return False
@@ -347,7 +347,7 @@ def endStream():
             exit()
         else:
             if vFunc.stopExternal() is False: error()
-            if vFunc.stopRecording() is False: error()
+            if vFunc.stopStreaming() is False: error()
     except Exception as e:
         print(str(e))
         return False
