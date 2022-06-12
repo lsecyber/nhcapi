@@ -22,7 +22,6 @@ def openvMix(presetFile: str = "C:/QuickAccess Files/vMix/vMix - Sunday Mornings
                     return True
                 else:
                     return False
-            return True
         except Exception as e:
             print("Error starting vMix: ", e)
             return False
@@ -40,7 +39,7 @@ def vMixFunction(function: str, duration: int = 0, rawInputKey: str = "", value:
             vmix_function_url += "&Input="
             vmix_function_url += rawInputKey
         else:
-            print("1")
+            print("Invalid input key: " + rawInputKey)
             return False
 
     if value != "":
