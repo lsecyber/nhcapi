@@ -1,4 +1,5 @@
 import urllib3
+import urllib.parse
 import vmixapi
 import traceback
 import os
@@ -135,3 +136,9 @@ def showLargePreview(inputKey: str, targetIP: str = "127.0.0.1", targetPort: str
 def hideLargePreview(inputKey: str, targetIP: str = "127.0.0.1", targetPort: str = "8088"):
     return vMixFunction(function='InputPreviewHide', rawInputKey=inputKey,
                         targetIPOpt=targetIP, targetPortOpt=targetPort)
+
+def savePreset(presetFile: str = "C%3A%5CQuickAccess%20Files%5CvMix%5CvMix%20-%20Sunday%20Mornings%20New.vmix", targetIP: str = "127.0.0.1", targetPort: str = "8088"):
+    #urlEncodedPreset = urllib.parse.quote(presetFile.replace("\\", "%5C"))
+    urlEncodedPreset = presetFile
+    return vMixFunction(function='SavePreset', value=urlEncodedPreset,
+                        targetIPOpt=targetIP,targetPortOpt=targetPort)

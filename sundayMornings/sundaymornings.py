@@ -64,9 +64,9 @@ def error(previousLines: int = 0):
     raise Exception("Error running line " + str(lineNumber) + ": " + lineContent)
 
 
-def startStream():
+def startStream(promptForConfirmation = True):
     """
-    Starts the stream and prepares it. Prompts for conformation first.
+    Starts the stream and prepares it. Prompts for confirmation first.
 
     :return: Returns True if successful, False if not
     :rtype: bool
@@ -86,9 +86,14 @@ def startStream():
         if vFunc.fadeAudioSourceUp(pcAudioInputKey, duration=1000) is False: error()
 
         # start streaming after confirming
-        yesNoAnswer = yesNoMessageBox('Are you sure that you would like to start streaming?')
-        if yesNoAnswer:
+        if promptForConfirmation:
+            yesNoAnswer = yesNoMessageBox('Are you sure that you would like to start streaming?')
+        else:
+            yesNoAnswer = False
+        
+        if yesNoAnswer or not promptForConfirmation:
             vFunc.startStreaming()
+            print('Just started streaming.')
 
         # start external output
         if vFunc.startExternal() is False: error()
@@ -200,8 +205,8 @@ def startGreeting():
         # fade soundboard down and pc up
         if vFunc.switchAudioSource(soundboardAudioInputKey, pcAudioInputKey, 1000) is False: error()
 
-        # show a large preview of the ptz without lyrics input
-        if vFunc.showLargePreview(ptzWithoutLyricsInputKey) is False: error()
+        # show a large preview of the slides input
+        if vFunc.showLargePreview(slidesInputKey) is False: error()
 
     except Exception as e:
         print(str(e))
@@ -218,8 +223,8 @@ def endGreeting():
     :rtype: bool
     """
     try:
-        # hides the large preview of the PTZ W/out lyrics input in vMix
-        if vFunc.hideLargePreview(ptzWithoutLyricsInputKey) is False: error()
+        # hides the large preview of the slides input in vMix
+        if vFunc.hideLargePreview(slidesInputKey) is False: error()
 
         # stops the greeting playlist
         if vFunc.stopPlaylist() is False: error()
@@ -333,7 +338,7 @@ def endService():
         return True
 
 
-def endStream():
+def endStream(promptForConfirmation = True):
     """
     Fade soundboard audio down, delay 4 secs, then prompt to stop external output and recording.
 
@@ -343,11 +348,32 @@ def endStream():
     try:
         if vFunc.fadeAudioSourceDown(soundboardAudioInputKey) is False: error()
         sleep(4)
-        if not yesNoMessageBox('Are you sure you would like to stop streaming?'):
-            exit()
+        if promptForConfirmation:
+            if not yesNoMessageBox('Are you sure you would like to stop streaming?'):
+                exit()
         else:
             if vFunc.stopExternal() is False: error()
             if vFunc.stopStreaming() is False: error()
+    except Exception as e:
+        print(str(e))
+        return False
+    else:
+        return True
+
+def shutdown():
+    try:
+        # fade to slides input in vMix
+        if vFunc.fadeToInput(slidesInputKey) is False: error()
+
+        sleep(1.1)
+
+        # send the static (dynamic) date slide to vMix preview
+        if vFunc.previewInput(sundayMorningWorshipDateInputKey) is False: error()
+
+        sleep(0.5)
+
+        # stop recording in vMix
+        if vFunc.stopRecording() is False: error()
     except Exception as e:
         print(str(e))
         return False
@@ -385,7 +411,10 @@ def runStep(step: str):
     ]
 
     if step in optionsArray:
-        return str(globals()[step]())
+        if 'Stream' in step:
+            return str(globals()[step](False))
+        else:
+            return str(globals()[step]())
 
     else:
         print('Error - invalid step "' + step + '". Options: \n' + ", ".join(optionsArray))
