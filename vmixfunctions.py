@@ -1,4 +1,5 @@
 import urllib3
+import urllib.parse
 import vmixapi
 import traceback
 import os
@@ -6,25 +7,22 @@ import time
 
 
 def openvMix(presetFile: str = "C:/QuickAccess Files/vMix/vMix - Sunday Mornings.vmix"):
-    doesPresetExist = os.path.exists(presetFile)
-    doesvMixExist = os.path.exists("C:/Program Files (x86)/vMix/vMix64.exe")
-    if (vmixapi.checkvMixRunning()):
+    does_preset_exist = os.path.exists(presetFile)
+    does_vmix_exist = os.path.exists("C:/Program Files (x86)/vMix/vMix64.exe")
+    if vmixapi.checkvMixRunning():
         return True
-    if doesPresetExist and doesvMixExist:
+    if does_preset_exist and does_vmix_exist:
         try:
-            cmdStartvMix = os.startfile(presetFile)
-            cont = True
-            x = 0
+            os.startfile(presetFile)
             time.sleep(7)
-            if (vmixapi.checkvMixRunning()):
+            if vmixapi.checkvMixRunning():
                 return True
             else:
                 time.sleep(10)
-                if (vmixapi.checkvMixRunning()):
+                if vmixapi.checkvMixRunning():
                     return True
                 else:
                     return False
-            return True
         except Exception as e:
             print("Error starting vMix: ", e)
             return False
@@ -34,31 +32,31 @@ def openvMix(presetFile: str = "C:/QuickAccess Files/vMix/vMix - Sunday Mornings
 
 def vMixFunction(function: str, duration: int = 0, rawInputKey: str = "", value: str = "",
                  targetIPOpt: str = "127.0.0.1", targetPortOpt: str = "8088"):
-    vMixFunctionURL = "http://" + targetIPOpt + ":" + targetPortOpt + \
+    vmix_function_url = "http://" + targetIPOpt + ":" + targetPortOpt + \
                       "/api/?Function=" + function
 
-    if (rawInputKey != ""):
+    if rawInputKey != "":
         if vmixapi.isValidInputKey(rawInputKey):
-            vMixFunctionURL += "&Input="
-            vMixFunctionURL += rawInputKey
+            vmix_function_url += "&Input="
+            vmix_function_url += rawInputKey
         else:
-            print("1")
+            print("Invalid input key: " + rawInputKey)
             return False
 
-    if (value != ""):
-        vMixFunctionURL += "&Value="
-        vMixFunctionURL += value
+    if value != "":
+        vmix_function_url += "&Value="
+        vmix_function_url += value
 
-    if (duration != 0):
-        vMixFunctionURL += "&Duration="
-        vMixFunctionURL += str(duration)
+    if duration != 0:
+        vmix_function_url += "&Duration="
+        vmix_function_url += str(duration)
 
     http = urllib3.PoolManager()
 
     try:
-        response = http.request('GET', vMixFunctionURL)
+        response = http.request('GET', vmix_function_url)
     except:
-        print("2")
+        print("ERROR with HTTP request.")
         return False
 
     return True
@@ -85,7 +83,7 @@ def switchAudioSource(inputKeyFadeOut: str, inputKeyFadeIn: str, duration: int =
                       targetPort: str = "8088"):
     response1 = fadeAudioSourceDown(inputKeyFadeOut, duration, targetIP, targetPort)
     response2 = fadeAudioSourceUp(inputKeyFadeIn, duration, targetIP, targetPort)
-    if (response1 and response2):
+    if response1 and response2:
         return True
     else:
         return False
@@ -125,3 +123,22 @@ def startPlaylist(targetIP: str = "127.0.0.1", targetPort: str = "8088"):
 
 def stopPlaylist(targetIP: str = "127.0.0.1", targetPort: str = "8088"):
     return vMixFunction(function="StopPlaylist", targetIPOpt=targetIP, targetPortOpt=targetPort)
+
+
+def selectPlaylist(playlist: str, targetIP: str = "127.0.0.1", targetPort: str = "8088"):
+    return vMixFunction(function='SelectPlaylist', value=playlist, targetIPOpt=targetIP, targetPortOpt=targetPort)
+
+
+def showLargePreview(inputKey: str, targetIP: str = "127.0.0.1", targetPort: str = "8088"):
+    return vMixFunction(function='InputPreviewShow', rawInputKey=inputKey,
+                        targetIPOpt=targetIP, targetPortOpt=targetPort)
+
+def hideLargePreview(inputKey: str, targetIP: str = "127.0.0.1", targetPort: str = "8088"):
+    return vMixFunction(function='InputPreviewHide', rawInputKey=inputKey,
+                        targetIPOpt=targetIP, targetPortOpt=targetPort)
+
+def savePreset(presetFile: str = "C%3A%5CQuickAccess%20Files%5CvMix%5CvMix%20-%20Sunday%20Mornings%20New.vmix", targetIP: str = "127.0.0.1", targetPort: str = "8088"):
+    #urlEncodedPreset = urllib.parse.quote(presetFile.replace("\\", "%5C"))
+    urlEncodedPreset = presetFile
+    return vMixFunction(function='SavePreset', value=urlEncodedPreset,
+                        targetIPOpt=targetIP,targetPortOpt=targetPort)
